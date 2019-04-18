@@ -33,7 +33,7 @@ plot = False
 # or
 # >>> study_path = '/Users/sophie/repos/ExampleData/'
 
-study_path = 'data/'
+study_path = '/neurospin/meg/meg_tmp/TimeInWM_Izem_2019/'
 
 # ``subjects_dir`` : str
 #   The ``subjects_dir`` contains the MRI files for all subjects.
@@ -53,7 +53,7 @@ meg_dir = os.path.join(study_path, 'MEG')
 #
 # ``study_name`` : str
 #   This is the name of your experiment.
-study_name = 'Localizer'
+study_name = 'TimeInWM'
 
 # ``subjects_list`` : list of str
 #   To define the list of participants, we use a list with all the anonymized
@@ -62,11 +62,10 @@ study_name = 'Localizer'
 #   subjects_list = ['SB01']
 
 # To use all subjects use
-subjects_list = ['SB01', 'SB02', 'SB04', 'SB05', 'SB06', 'SB07',
-                 'SB08', 'SB09', 'SB10', 'SB11', 'SB12']
+subjects_list = ['pilot01']
 # else for speed and fast test you can use:
 
-subjects_list = ['SB01']
+#subjects_list = ['SB01']
 
 # ``exclude_subjects`` : list of str
 #   Now you can specify subjects to exclude from the group study:
@@ -90,7 +89,7 @@ exclude_subjects = []
 # if there are less runs than is expected. If there is only just one file,
 # leave empty!
 
-runs = ['']  # ['run01', 'run02']
+runs = ['_run01','_run02','_run03']  # ['run01', 'run02']
 
 # ``eeg``  : bool
 #    If true use the EEG channels
@@ -126,10 +125,14 @@ base_fname = '{subject}_' + study_name + '{extension}.fif'
 # >>> bads['SB01'] = ['MEG1723', 'MEG1722']
 #
 
-bads = defaultdict(list)
-bads['SB01'] = ['MEG1723', 'MEG1722']
-bads['SB04'] = ['MEG0543', 'MEG2333']
-bads['SB06'] = ['MEG2632', 'MEG2033']
+#bads = defaultdict(list)
+#bads['SB01'] = ['MEG1723', 'MEG1722']
+#bads['SB04'] = ['MEG0543', 'MEG2333']
+#bads['SB06'] = ['MEG2632', 'MEG2033']
+
+bads = dict(pilot01=dict(_run01=['MEG0213','MEG0741','MEG1512'],
+                         _run02=['MEG0213','MEG0741','MEG1512'],
+                         _run03=['MEG0213','MEG0741','MEG1512']))
 
 #
 #    Use the dict(dict) if you have many runs or if noisy sensors are changing
@@ -181,7 +184,12 @@ rename_channels = None
 # >>> set_channel_types = {'EEG061': 'eog', 'EEG062': 'eog',
 #                          'EEG063': 'ecg', 'EEG064': 'misc'}
 
-set_channel_types = None
+set_channel_types = {'EOG061': 'eog', 'EOG062': 'eog', 'ECG063': 'ecg', 
+                     'MISC201': 'misc', 'MISC202': 'misc', 'MISC203': 'misc',
+                     'MISC204': 'misc', 'MISC205': 'misc', 'MISC206': 'misc',
+                     'MISC301': 'misc', 'MISC302': 'misc', 'MISC303': 'misc',
+                     'MISC304': 'misc', 'MISC305': 'misc', 'MISC306': 'misc'}
+
 
 ###############################################################################
 # FREQUENCY FILTERING
@@ -234,7 +242,7 @@ h_freq = 40.
 # ``cal_files_path``  : str
 #   path to the folder where the calibration files are
 #   if you placed it right, you don't have to edit this
-cal_files_path = os.path.join(study_path, 'system_calibration_files')
+cal_files_path = os.path.join(study_path, 'SSS')
 
 # ``mf_ctc_fname``  : str
 #    Path to the FIF file with cross-talk correction information. 
@@ -265,7 +273,7 @@ mf_reference_run = 0
 #   defines the origin for the head position 
 #   if 'auto', position is fitted from the digitized points
 
-mf_head_origin = 'auto'
+mf_head_origin = (0,0,.04)
 
 
 # ``mf_st_duration `` : if None, no temporal-spatial filtering is applied
@@ -363,24 +371,24 @@ reject = {'grad': 4000e-13, 'mag': 4e-12}
 # ``tmin``: float
 #    A float in seconds that gives the start time before event of an epoch.
 
-tmin = -0.6
+tmin = -0.4
 
 # ``tmax``: float
 #    A float in seconds that gives the end time before event of an epoch.
 
-tmax = 1.5
+tmax = 0.4
 
 # ``trigger_time_shift`` : float | None
 #    If float it specifies the offset for the trigger and the stimulus
 #    (in seconds). You need to measure this value for your specific
 #    experiment/setup.
 
-trigger_time_shift = -0.0416
+trigger_time_shift = 0
 
 # ``baseline`` : tuple
 #    It specifies how to baseline the epochs; if None, no baseline is applied.
 
-baseline = (-.6, -.5)  # (None, 0.)
+baseline = (-.1, 0)  # (None, 0.)
 
 # ``stim_channel`` : str
 #    The name of the stimulus channel, which contains the events.
@@ -392,7 +400,7 @@ stim_channel = 'STI101'  # 'STI014'# None
 #     Chose a value that is larger than the expected trigger duration  
 
 
-min_event_duration = 0.002
+min_event_duration = 0.003
 
 #  `event_id`` : dict
 #     Dictionary that maps events (trigger/marker values)
@@ -406,9 +414,12 @@ min_event_duration = 0.002
 # or
 # >>> event_id = {'Onset': 4} with conditions = ['Onset']
 
-event_id = {'incoherent/1': 33, 'incoherent/2': 35,
-            'coherent/down': 37, 'coherent/up': 39}
-conditions = ['incoherent', 'coherent']
+#event_id = {'incoherent/1': 33, 'incoherent/2': 35,
+#            'coherent/down': 37, 'coherent/up': 39}
+#conditions = ['incoherent', 'coherent']
+
+event_id = {'tone/2': 120, 'tone/3': 130, 'tone/4':140}
+conditions = ['tone']
 
 
 # Good Practice / Advice
@@ -602,14 +613,14 @@ if not os.path.isdir(subjects_dir):
 # ADVANCED
 # --------
 #
-# ``l_trans_bandwidth`` : float | 'auto'
+# ``l_trans_bandwidth`` : float | 'auto'
 #    A float that specifies the transition bandwidth of the
 #    highpass filter. By default it's `'auto'` and uses default mne
 #    parameters.
 
 l_trans_bandwidth = 'auto'
 
-#  ``h_trans_bandwidth`` : float | 'auto'
+#  ``h_trans_bandwidth`` : float | 'auto'
 #    A float that specifies the transition bandwidth of the
 #    lowpass filter. By default it's `'auto'` and uses default mne
 #    parameters.
