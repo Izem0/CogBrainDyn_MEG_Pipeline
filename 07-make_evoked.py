@@ -41,7 +41,11 @@ def run_evoked(subject):
 
         for condition, evoked in zip(config.conditions, evokeds):
             evoked.plot_joint(title=condition, ts_args=ts_args,
-                              topomap_args=topomap_args, times=[0., 0.1, .2, .3, .4])
+                              topomap_args=topomap_args, times=[0, .04, .07, .108, .176, .374])
+        
+#        for condition, evoked in zip(config.conditions, evokeds):
+#            evoked.plot_joint(title=condition, ts_args=ts_args,
+#                              topomap_args=topomap_args)        
 
 
 parallel, run_func, _ = parallel_func(run_evoked, n_jobs=config.N_JOBS)

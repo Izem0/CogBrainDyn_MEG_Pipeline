@@ -17,7 +17,7 @@ import numpy as np
 #   If running the scripts from a notebook or spyder
 #   run %matplotlib qt in the command line to get the plots in extra windows
 
-plot = False
+plot = True
 
 
 ###############################################################################
@@ -62,9 +62,10 @@ study_name = 'TimeInWM'
 #   subjects_list = ['SB01']
 
 # To use all subjects use
-subjects_list = ['pilot01']
-# else for speed and fast test you can use:
+#subjects_list = ['hm_070076','cc_150418','sf_180213']
+subjects_list = ['hm_070076']
 
+# else for speed and fast test you can use:
 #subjects_list = ['SB01']
 
 # ``exclude_subjects`` : list of str
@@ -89,7 +90,7 @@ exclude_subjects = []
 # if there are less runs than is expected. If there is only just one file,
 # leave empty!
 
-runs = ['_run01','_run02','_run03']  # ['run01', 'run02']
+runs = ['_run01']  # ['run01', 'run02']
 
 # ``eeg``  : bool
 #    If true use the EEG channels
@@ -118,21 +119,16 @@ base_fname = '{subject}_' + study_name + '{extension}.fif'
 # ~~~~~~~
 #
 # Define dict(list): 
-# >>> bads = defaultdict(list)
+#bads = defaultdict(list)
 #
-#   and to populate this, do:
+##   and to populate this, do:
 #
-# >>> bads['SB01'] = ['MEG1723', 'MEG1722']
-#
+#bads['SB01'] = ['MEG1723', 'MEG1722']
+
 
 #bads = defaultdict(list)
-#bads['SB01'] = ['MEG1723', 'MEG1722']
 #bads['SB04'] = ['MEG0543', 'MEG2333']
 #bads['SB06'] = ['MEG2632', 'MEG2033']
-
-bads = dict(pilot01=dict(_run01=['MEG0213','MEG0741','MEG1512'],
-                         _run02=['MEG0213','MEG0741','MEG1512'],
-                         _run03=['MEG0213','MEG0741','MEG1512']))
 
 #
 #    Use the dict(dict) if you have many runs or if noisy sensors are changing
@@ -145,12 +141,47 @@ bads = dict(pilot01=dict(_run01=['MEG0213','MEG0741','MEG1512'],
 # 
 # >>> def default_bads():
 # >>>     return dict(run01=[], run02=[])
-# >>>
-# >>> bads = defaultdict(default_bads)
-#
-#   and to populate this, do:
-#
+
+def default_bads():
+    return dict(run01=[], run02=[], run03=[], run04=[], run05=[], run06=[], run07=[], run08=[])
+
+bads = defaultdict(default_bads)
+
 # >>> bads['subject01'] = dict(run01=[12], run02=[7])
+
+bads['hm_070076'] = dict(
+                         _run01=['MEG0213','MEG1433','MEG0633','MEG1722','MEG1723','MEG1933','MEG2341','MEG0311','MEG0931'],
+                         _run02=['MEG0213','MEG1433','MEG0633','MEG1722','MEG1723','MEG1933','MEG0311','MEG0931'],
+                         _run03=['MEG0213','MEG1433','MEG0633','MEG1722','MEG1723','MEG1933','MEG0311','MEG0931'],
+                         _run04=['MEG0213','MEG2432','MEG0633','MEG1433','MEG1722','MEG1723','MEG1933','MEG0311','MEG0931'],
+                         _run05=['MEG0213','MEG1341','MEG0633','MEG1722','MEG1723','MEG1933', 'MEG0311'],
+                         _run06=['MEG0213','MEG1433','MEG0633','MEG2211','MEG1341','MEG1722','MEG1723','MEG1933','MEG0311'],
+                         _run07=['MEG0213','MEG1433','MEG0633','MEG1341','MEG1722','MEG1723','MEG1933','MEG0311'],
+                         _run08=['MEG0213','MEG1433','MEG0633','MEG1341','MEG1722','MEG1723','MEG1933','MEG0311'],
+                         )
+
+#bads['cc_150418'] = dict(
+#                         run01=[],
+#                         run02=[],
+#                         run03=[],
+#                         run04=[],
+#                         run05=[],
+#                         run06=[],
+#                         run07=[],
+#                         run08=[],
+#                         )
+#
+#bads['sf_180213'] = dict(
+#                         run01=[],
+#                         run02=[],
+#                         run03=[],
+#                         run04=[],
+#                         run05=[],
+#                         run06=[],
+#                         run07=[],
+#                         run08=[],
+#                         )
+
 #
 # Good Practice / Advice
 # ~~~~~~~~~~~~~~~~~~~~~~
@@ -184,11 +215,7 @@ rename_channels = None
 # >>> set_channel_types = {'EEG061': 'eog', 'EEG062': 'eog',
 #                          'EEG063': 'ecg', 'EEG064': 'misc'}
 
-set_channel_types = {'EOG061': 'eog', 'EOG062': 'eog', 'ECG063': 'ecg', 
-                     'MISC201': 'misc', 'MISC202': 'misc', 'MISC203': 'misc',
-                     'MISC204': 'misc', 'MISC205': 'misc', 'MISC206': 'misc',
-                     'MISC301': 'misc', 'MISC302': 'misc', 'MISC303': 'misc',
-                     'MISC304': 'misc', 'MISC305': 'misc', 'MISC306': 'misc'}
+set_channel_types = None
 
 
 ###############################################################################
@@ -273,7 +300,7 @@ mf_reference_run = 0
 #   defines the origin for the head position 
 #   if 'auto', position is fitted from the digitized points
 
-mf_head_origin = (0,0,.04)
+mf_head_origin = 'auto'
 
 
 # ``mf_st_duration `` : if None, no temporal-spatial filtering is applied
@@ -400,7 +427,7 @@ stim_channel = 'STI101'  # 'STI014'# None
 #     Chose a value that is larger than the expected trigger duration  
 
 
-min_event_duration = 0.003
+min_event_duration = 0.005
 
 #  `event_id`` : dict
 #     Dictionary that maps events (trigger/marker values)
@@ -418,7 +445,7 @@ min_event_duration = 0.003
 #            'coherent/down': 37, 'coherent/up': 39}
 #conditions = ['incoherent', 'coherent']
 
-event_id = {'tone/2': 120, 'tone/3': 130, 'tone/4':140}
+event_id = {'tone/1': 11, 'tone/2': 12, 'tone/3': 13, 'tone/4': 14}
 conditions = ['tone']
 
 
@@ -523,7 +550,9 @@ ica_ctps_ecg_threshold = 0.1
 #
 # >>> decoding_conditions = [('Auditory', 'Visual'), ('Left', 'Right')]
 
-decoding_conditions = [('incoherent', 'coherent')]
+#decoding_conditions = [('incoherent', 'coherent')]
+
+decoding_conditions = [('tone')]
 
 # ``decoding_metric`` : str
 #    The metric to use for cross-validation. It can be 'roc_auc' or 'accuracy'
@@ -535,6 +564,7 @@ decoding_metric = 'roc_auc'
 #    The number of folds (a.k.a. splits) to use in the cross-validation.
 
 decoding_n_splits = 5
+
 
 ###############################################################################
 # TIME-FREQUENCY
