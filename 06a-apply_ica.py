@@ -53,7 +53,7 @@ def apply_ica(subject):
     # run ICA on MEG and EEG
     picks_meg = mne.pick_types(raw.info, meg=True, eeg=False,
                                eog=False, stim=False, exclude='bads')
-    picks_eeg = mne.pick_types(raw.info, meg=False, eeg=True,
+    picks_eeg = mne.pick_types(raw.info, meg=False, eeg=False,
                                eog=False, stim=False, exclude='bads')
     all_picks = {'meg': picks_meg, 'eeg': picks_eeg}
 
@@ -147,7 +147,9 @@ def apply_ica(subject):
                                            tmax=0.5)
 
             eog_average = eog_epochs.average()
+            
             eog_inds, scores = ica.find_bads_eog(eog_epochs, threshold=3.0)
+            
             del eog_epochs
 
             params = dict(exclude=eog_inds, show=config.plot)
@@ -173,8 +175,19 @@ def apply_ica(subject):
             print('no EOG channel is present. Cannot automate ICAs component '
                   'detection for EOG!')
 
+
+        ecg_inds = [11,26]
+        eog_inds = [21]
+
+
+#        ica_reject = (list(ecg_inds) + list(eog_inds))
+
+#        ica_reject = (list(config.rejcomps_man[subject][ch_type]))   
+
         ica_reject = (list(ecg_inds) + list(eog_inds) +
                       list(config.rejcomps_man[subject][ch_type]))
+        
+             
 
         # now reject the components
         print('Rejecting from %s: %s' % (ch_type, ica_reject))

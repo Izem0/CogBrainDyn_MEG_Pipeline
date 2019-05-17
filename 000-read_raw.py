@@ -11,8 +11,8 @@ import mne
 
 import config
 
-subject = 'hm_070076'
-runs = ['_run01']
+subject = 'fr_190151'
+runs = ['_run08']
 meg_subject_dir = op.join(config.meg_dir, subject)
 
 
@@ -31,6 +31,12 @@ for run in runs:
 #    raw.pick_types('grad')
     # plot raw data
     raw.plot(n_channels=50, butterfly=True, group_by='position')
+    
+    
+    
+    
+    
+    
     
     
     # plot power spectral densitiy

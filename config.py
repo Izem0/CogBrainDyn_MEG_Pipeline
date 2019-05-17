@@ -17,6 +17,7 @@ import numpy as np
 #   If running the scripts from a notebook or spyder
 #   run %matplotlib qt in the command line to get the plots in extra windows
 
+#plot = False
 plot = True
 
 
@@ -62,7 +63,7 @@ study_name = 'TimeInWM'
 #   subjects_list = ['SB01']
 
 # To use all subjects use
-#subjects_list = ['hm_070076','cc_150418','sf_180213']
+#subjects_list = ['hm_070076','cc_150418','sf_180213','eb_180237','og_170145','ga_180461','fr_190151']
 subjects_list = ['hm_070076']
 
 # else for speed and fast test you can use:
@@ -90,7 +91,8 @@ exclude_subjects = []
 # if there are less runs than is expected. If there is only just one file,
 # leave empty!
 
-runs = ['_run01']  # ['run01', 'run02']
+#runs = ['_run01']
+runs = ['_run01','_run02','_run03','_run04','_run05','_run06','_run07','_run08']
 
 # ``eeg``  : bool
 #    If true use the EEG channels
@@ -154,35 +156,109 @@ bads['hm_070076'] = dict(
                          _run02=['MEG0213','MEG1433','MEG0633','MEG1722','MEG1723','MEG1933','MEG0311','MEG0931'],
                          _run03=['MEG0213','MEG1433','MEG0633','MEG1722','MEG1723','MEG1933','MEG0311','MEG0931'],
                          _run04=['MEG0213','MEG2432','MEG0633','MEG1433','MEG1722','MEG1723','MEG1933','MEG0311','MEG0931'],
-                         _run05=['MEG0213','MEG1341','MEG0633','MEG1722','MEG1723','MEG1933', 'MEG0311'],
+                         _run05=['MEG0213','MEG1341','MEG0633','MEG1722','MEG1723','MEG1933','MEG0311'],
                          _run06=['MEG0213','MEG1433','MEG0633','MEG2211','MEG1341','MEG1722','MEG1723','MEG1933','MEG0311'],
                          _run07=['MEG0213','MEG1433','MEG0633','MEG1341','MEG1722','MEG1723','MEG1933','MEG0311'],
-                         _run08=['MEG0213','MEG1433','MEG0633','MEG1341','MEG1722','MEG1723','MEG1933','MEG0311'],
+                         _run08=['MEG0213','MEG1433','MEG0633','MEG1341','MEG1722','MEG1723','MEG1933','MEG0311']
                          )
 
-#bads['cc_150418'] = dict(
-#                         run01=[],
-#                         run02=[],
-#                         run03=[],
-#                         run04=[],
-#                         run05=[],
-#                         run06=[],
-#                         run07=[],
-#                         run08=[],
-#                         )
-#
-#bads['sf_180213'] = dict(
-#                         run01=[],
-#                         run02=[],
-#                         run03=[],
-#                         run04=[],
-#                         run05=[],
-#                         run06=[],
-#                         run07=[],
-#                         run08=[],
+bads['cc_150418'] = dict(
+                         _run01=['MEG0213','MEG2621','MEG0633','MEG1722','MEG1723','MEG1721','MEG1933','MEG2133','MEG2132','MEG0311','MEG0341','MEG1243'],
+                         _run02=['MEG0213','MEG2621','MEG0633','MEG1722','MEG1723','MEG1933','MEG2133','MEG0311','MEG0613','MEG0623','MEG1243'],
+                         _run03=['MEG0213','MEG2621','MEG0633','MEG1722','MEG1723','MEG1933','MEG1732','MEG2133','MEG0311','MEG0613','MEG0623'],
+                         _run04=['MEG0213','MEG2621','MEG0422','MEG1722','MEG1723','MEG1933','MEG1732','MEG2133','MEG0311','MEG0613','MEG0623'],
+                         _run05=['MEG0213','MEG2621','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG1931','MEG2133','MEG2132','MEG0311','MEG0623','MEG1243'],
+                         _run06=['MEG0213','MEG2621','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG2133','MEG2132','MEG0311','MEG0623','MEG1243'],
+                         _run07=['MEG0213','MEG2621','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG2133','MEG2132','MEG0311','MEG0623','MEG0613','MEG1243'],
+                         _run08=['MEG0213','MEG2621','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG2133','MEG2132','MEG0311','MEG0623','MEG0613','MEG1243']
+                         )
+
+bads['sf_180213'] = dict(
+                         _run01=['MEG0213','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG2343','MEG0311','MEG0531','MEG0821','MEG1243'],
+                         _run02=['MEG0213','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG1731','MEG2343','MEG0311','MEG0531','MEG1243'],
+                         _run03=['MEG0213','MEG0633','MEG1722','MEG1723','MEG1731','MEG1933','MEG2343','MEG0311','MEG0531','MEG1243'],
+                         _run04=['MEG0213','MEG0633','MEG1722','MEG1723','MEG1731','MEG1933','MEG2343','MEG0311','MEG0531','MEG1243'],
+                         _run05=['MEG0213','MEG0633','MEG1722','MEG1723','MEG1731','MEG1933','MEG2343','MEG0311','MEG0531','MEG1243'],
+                         _run06=['MEG0213','MEG0633','MEG1722','MEG1723','MEG1731','MEG1933','MEG2343','MEG0311','MEG0531','MEG1243'],
+                         _run07=['MEG0213','MEG0633','MEG1722','MEG1723','MEG1731','MEG1933','MEG2343','MEG0311','MEG1243'],
+                         _run08=['MEG0213','MEG0633','MEG1722','MEG1723','MEG1731','MEG1933','MEG2343','MEG0311','MEG1243']
+                         )
+
+
+bads['eb_180237'] = dict(
+                         _run01=['MEG0213','MEG0633','MEG1722','MEG1723','MEG1732','MEG1741','MEG1933','MEG0311','MEG1243'],
+                         _run02=['MEG0213','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG0613','MEG0623','MEG1243'],
+                         _run03=['MEG0213','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG0613','MEG1243'],
+                         _run04=['MEG0213','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG1243'],
+                         _run05=['MEG0213','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG0613','MEG1243'],
+                         _run06=['MEG0213','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG0613','MEG1243'],
+                         _run07=['MEG0213','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG0613','MEG1243'],
+                         _run08=['MEG0213','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG0613','MEG1243']
+                         )
+
+
+bads['og_170145'] = dict(
+                         _run01=['MEG0213','MEG0633','MEG0741','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG0613','MEG1243'],
+                         _run02=['MEG0213','MEG0633','MEG0741','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG0623','MEG1243'],
+                         _run03=['MEG0213','MEG0633','MEG0741','MEG1722','MEG1732','MEG1933','MEG0311','MEG0623','MEG1243'],
+                         _run04=['MEG0213','MEG0633','MEG0741','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG0623','MEG1243'],
+                         _run05=['MEG0213','MEG2432','MEG0633','MEG1722','MEG1723','MEG1732','MEG1733','MEG1933','MEG0311','MEG0613','MEG1243'],
+                         _run06=['MEG0213','MEG2432','MEG0633','MEG1722','MEG1723','MEG1732','MEG1733','MEG1933','MEG0311','MEG0613','MEG1243'],
+                         _run07=['MEG0213','MEG2432','MEG0633','MEG1722','MEG1723','MEG1732','MEG1733','MEG1933','MEG2133','MEG2132','MEG0311','MEG1243'],
+                         _run08=['MEG0213','MEG2432','MEG0633','MEG1722','MEG1723','MEG1732','MEG1733','MEG1933','MEG0311','MEG1243']
+                         )
+
+
+bads['ga_180461'] = dict(
+                         _run01=['MEG0213','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG0613'],
+                         _run02=['MEG0213','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG2121','MEG0311','MEG0541','MEG0613'],
+                         _run03=['MEG0213','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG2121','MEG0311','MEG0541','MEG0613'],
+                         _run04=['MEG0213','MEG0633','MEG0741','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG0613'],
+                         _run05=['MEG0213','MEG0633','MEG0741','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG0541','MEG0613'],
+                         _run06=['MEG0213','MEG0633','MEG0741','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG0613'],
+                         _run07=['MEG0131','MEG0213','MEG0633','MEG0741','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG0613','MEG1011'],
+                         _run08=['MEG0131','MEG0213','MEG0633','MEG0741','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG0613','MEG1011']
+                         )
+
+bads['fr_190151'] = dict(
+                         _run01=['MEG0213','MEG2411','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG0522','MEG0542','MEG0943','MEG1031'],
+                         _run02=['MEG0213','MEG2411','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG0522','MEG0542','MEG0943','MEG1031'],
+                         _run03=['MEG0213','MEG2411','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG0522','MEG0542','MEG0943','MEG1031'],
+                         _run04=['MEG0213','MEG2411','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG0522','MEG0542','MEG0943','MEG1031'],
+                         _run05=['MEG0213','MEG2411','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG0522','MEG0542','MEG0943'],
+                         _run06=['MEG0213','MEG2411','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG0522','MEG0542','MEG0943'],
+                         _run07=['MEG0213','MEG2411','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG0522','MEG0542','MEG0943'],
+                         _run08=['MEG0213','MEG2411','MEG0633','MEG1722','MEG1723','MEG1732','MEG1933','MEG0311','MEG0522','MEG0542','MEG0943']
+                         )
+
+
+#bads[''] = dict(
+#                         _run01=[],
+#                         _run02=[],
+#                         _run03=[],
+#                         _run04=[],
+#                         _run05=[],
+#                         _run06=[],
+#                         _run07=[],
+#                         _run08=[]
 #                         )
 
-#
+
+
+#bads[''] = dict(
+#                         _run01=[],
+#                         _run02=[],
+#                         _run03=[],
+#                         _run04=[],
+#                         _run05=[],
+#                         _run06=[],
+#                         _run07=[],
+#                         _run08=[]
+#                         )
+
+
+
+
 # Good Practice / Advice
 # ~~~~~~~~~~~~~~~~~~~~~~
 # During the acquisition of your MEG / EEG data, systematically list and keep
@@ -398,12 +474,12 @@ reject = {'grad': 4000e-13, 'mag': 4e-12}
 # ``tmin``: float
 #    A float in seconds that gives the start time before event of an epoch.
 
-tmin = -0.4
+tmin = -0.350
 
 # ``tmax``: float
 #    A float in seconds that gives the end time before event of an epoch.
 
-tmax = 0.4
+tmax = 0.500
 
 # ``trigger_time_shift`` : float | None
 #    If float it specifies the offset for the trigger and the stimulus
@@ -445,8 +521,18 @@ min_event_duration = 0.005
 #            'coherent/down': 37, 'coherent/up': 39}
 #conditions = ['incoherent', 'coherent']
 
-event_id = {'tone/1': 11, 'tone/2': 12, 'tone/3': 13, 'tone/4': 14}
-conditions = ['tone']
+
+event_id = {'tones/1': 11, 'tones/2': 12,'tones/3': 13, 'tones/4': 14}
+conditions = ['tones']
+
+
+#event_id = {
+#        '1_interval/1': 110, '1_interval/2': 120, '1_interval/3': 130,
+#        '3_intervals/1': 211, '3_intervals/2': 212, '3_intervals/3': 213, '3_intervals/4': 214, '3_intervals/5': 215, '3_intervals/6': 216,
+#        '3_intervals/7': 221, '3_intervals/8': 222, '3_intervals/9': 223, '3_intervals/10': 224, '3_intervals/11': 225, '3_intervals/12': 226,
+#        '3_intervals/13': 231, '3_intervals/14': 232, '3_intervals/15': 233, '3_intervals/16': 234, '3_intervals/17': 235, '3_intervals/18': 236
+#        }
+#conditions = ['1_interval','3_intervals']
 
 
 # Good Practice / Advice
@@ -507,12 +593,19 @@ ica_decim = 11
 #   than eye / heart activity that you wish to remove. 
 
 #   For example you can use:
-#    rejcomps_man['subject01'] = dict(eeg=[12], meg=[7])
+#rejcomps_man['subject01'] = dict(eeg=[12], meg=[7])
+
+
 
 def default_reject_comps():
     return dict(meg=[], eeg=[])
 
 rejcomps_man = defaultdict(default_reject_comps)
+
+#rejcomps_man = dict(eb_180237=dict(meg=[11,26], eeg=[21]))
+
+
+
 
 # ``ica_ctps_ecg_threshold``: float
 #    The threshold parameter passed to `find_bads_ecg` method.
@@ -552,7 +645,7 @@ ica_ctps_ecg_threshold = 0.1
 
 #decoding_conditions = [('incoherent', 'coherent')]
 
-decoding_conditions = [('tone')]
+decoding_conditions = [('1_interval','3_intervals')]
 
 # ``decoding_metric`` : str
 #    The metric to use for cross-validation. It can be 'roc_auc' or 'accuracy'
@@ -574,7 +667,7 @@ decoding_n_splits = 5
 # ``time_frequency_conditions`` : list
 #    The conditions to compute time-frequency decomposition on.
 
-time_frequency_conditions = ['coherent']
+time_frequency_conditions = ['1_interval','3_intervals']
 
 ###############################################################################
 # SOURCE SPACE PARAMETERS

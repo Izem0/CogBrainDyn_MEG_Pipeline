@@ -39,13 +39,14 @@ def run_evoked(subject):
         ts_args = dict(gfp=True, time_unit='s')
         topomap_args = dict(time_unit='s')
 
-        for condition, evoked in zip(config.conditions, evokeds):
-            evoked.plot_joint(title=condition, ts_args=ts_args,
-                              topomap_args=topomap_args, times=[0, .04, .07, .108, .176, .374])
-        
+# display specific times
 #        for condition, evoked in zip(config.conditions, evokeds):
 #            evoked.plot_joint(title=condition, ts_args=ts_args,
-#                              topomap_args=topomap_args)        
+#                              topomap_args=topomap_args, times=[0, .04, .07, .108, .176, .374])
+        
+        for condition, evoked in zip(config.conditions, evokeds):
+            evoked.plot_joint(title=condition, ts_args=ts_args,
+                              topomap_args=topomap_args)        
 
 
 parallel, run_func, _ = parallel_func(run_evoked, n_jobs=config.N_JOBS)
