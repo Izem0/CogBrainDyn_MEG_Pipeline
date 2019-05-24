@@ -176,18 +176,11 @@ def apply_ica(subject):
                   'detection for EOG!')
 
 
-        ecg_inds = [11,26]
-        eog_inds = [21]
+        ica_reject = (list(config.rejcomps_man[subject][ch_type]))   
 
-
-#        ica_reject = (list(ecg_inds) + list(eog_inds))
-
-#        ica_reject = (list(config.rejcomps_man[subject][ch_type]))   
-
-        ica_reject = (list(ecg_inds) + list(eog_inds) +
-                      list(config.rejcomps_man[subject][ch_type]))
-        
-             
+#        ica_reject = (list(ecg_inds) + list(eog_inds) +
+#                      list(config.rejcomps_man[subject][ch_type]))
+                 
 
         # now reject the components
         print('Rejecting from %s: %s' % (ch_type, ica_reject))

@@ -41,6 +41,13 @@ def run_events(subject):
                                                  np.unique(events[:, 2]),
                                                  config.trigger_time_shift,
                                                  raw.info['sfreq'])
+            
+        bad_events = [2,83,84,85,86,87,88,93,94,95,96,97,98,103,104,105,106,107,108]    
+        if subject == 'cc_150418':
+            for x,y in enumerate(events[:,2]):
+                if y in bad_events:
+                    events[x,2] = events[x,2]+128
+
 
         print("Input: ", raw_fname_in)
         print("Output: ", eve_fname_out)
