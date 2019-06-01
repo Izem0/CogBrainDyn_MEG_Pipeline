@@ -9,6 +9,7 @@ Created on Tue Apr 24 09:31:08 2018
 import numpy as np
 import matplotlib.pyplot as plt
 import glob
+import os.path as op
 
 import mne
 from mne.time_frequency import tfr_morlet, psd_multitaper, read_tfrs , write_tfrs, AverageTFR
@@ -26,18 +27,11 @@ from functools import partial
 #%% import from config file
 import config
 
-#%% get directories
-#root_directory = returnRootDirectory()
-#preproc_directory  = returnPreprocDirectory()
-#results_directory  = returnResultsDirectory()
-#TF_directory  = returnTFDirectory()
 
 #%% get nips
-#subjects_list = ['hm_070076','cc_150418','sf_180213','eb_180237','og_170145',
-#                 'ga_180461','fr_190151','tr_180110','ld_190260','cg_190026']
+subjects_list = ['hm_070076','cc_150418','sf_180213']
 
-nips = ['hm_070076','cc_150418','sf_180213','eb_180237','og_170145',
-                 'ga_180461','fr_190151','tr_180110','ld_190260','cg_190026']
+nips = subjects_list # ['hm_070076','cc_150418','sf_180213']
 print(nips)
 
 #oneP = [6] #range(11,len(nips)) # [3]
@@ -45,328 +39,161 @@ print(nips)
 #print(nips) 
 # nips = nips[14:19]
 #%% get parameters from config file
-epochs = mne.read_epochs(fname_in)
-EpochInfo = epochs.info
+#epochs = mne.read_epochs(fname_in)
+#EpochInfo = epochs.info
 #tasks = EpochInfo['task_names']
-conditions = ['1_interval','3_intervals']
-cond_colors = ['b--','g--','b','g']
+#conditions = ['1_interval','3_intervals',
+#                             'short_dur','med_dur','long_dur']
 
-#%% TF parameters
-
-freqs = np.linspace(.5,40.,num = 40)
-
-## either use tfr_multitaper:
-# n_cycles  = freqs/2. # time smoothing 
-# time_bandwidth  = 3. # frequency smoothing 
-
-## or morelet wavelets:
-n_cycles  = freqs/2. # time smoothing 
+conditions = ['short_dur','med_dur','long_dur']
+cond_colors = ['b','g']
 
 #%% LOAD ALL EPOCHS
 
 #run_tf = 0 # run it or load saved 
 
-LOCK = 'tar' # or cue
-ch_type = 'all' # mag/grad/eeg
 
-if LOCK=='cue':
-    tmin = -0.5
-    tmax = 3
-else:
-    # tar_locked
-    tmin = -3.5
-    tmax = 1.
+ch_type = 'grad' # mag/grad/eeg
 
 
-# load DATA
+tmin = -.1
+tmax = 4.2
 
     
-new_ch_type = 'mag' 
-
-# leaving out the shortest FP (0.5)
-# all: np.linspace(0.5,3.,num = 6)
-if LOCK=='cue':
-   foreperiods =  np.linspace(.5,3.,num = 6)
-   # np.linspace(2,3.,num = 3) 
-elif  LOCK=='tar':
-   # foreperiods =  np.linspace(.5,3.,num = 6)
-   foreperiods =  np.linspace(1.,3.,num = 5)
-
 # load TFS  
 for pp, nip in enumerate(nips):
     print(nip) 
     
     for c,condition in enumerate(conditions):
         cond_name = condition.replace("/","_")
+         
+        meg_subject_dir = op.join(config.meg_dir, nip)
         
-        # loop over FP
-        for f,this_fp in enumerate(foreperiods):
-            
-            meg_subject_dir = op.join(config.meg_dir, nip)
-            
-            power = mne.time_frequency.read_tfrs(op.join(meg_subject_dir, '%s_%s_power_%s-tfr.h5'
-                                                         % (config.study_name, nip,
-                                                            condition.replace(op.sep, ''))))
+        power = mne.time_frequency.read_tfrs(op.join(meg_subject_dir, '%s_%s_power_%s-tfr.h5'
+                                                     % (config.study_name, nip,
+                                                        condition.replace(op.sep, ''))))
 
-            power = power.pop()
-            power = power.crop(tmin=tmin,tmax=tmax)
+        power = power.pop()
+        power.apply_baseline(mode='percent',baseline=(-0.1,0))
             
-            if new_ch_type == 'mag':
-                power.pick_types(meg='mag')
-            elif new_ch_type == 'grad':
-                power.pick_types(meg='grad')
-            elif new_ch_type == 'eeg':
-                power.pick_types(eeg=True,meg = False)
-            
-            # initiate matrices on first need
-            if pp == 0 and c == 0 and f == 0:
-                POW = np.zeros((len(subjects), len(conditions), len(foreperiods), len(power.ch_names), len(power.freqs),len(power.times)))         
-                ITC = np.zeros((len(subjects), len(conditions), len(foreperiods), len(power.ch_names), len(power.freqs),len(power.times)))         
-               
-            # bsl correct power: always take pre-cue window
-            if LOCK=='cue':
-                power.apply_baseline(mode='zscore',baseline=(-0.1,0))
-            
-            elif LOCK=='tar':
-               #  power.apply_baseline(mode='zscore',baseline=(-(this_fp+0.49),-(this_fp)))
-                power.apply_baseline(mode='zscore', baseline=(tmin,tmax))
-                
-            POW[pp,c,f]=power.data
+        power = power.crop(tmin=tmin,tmax=tmax)    
+       
+        
+        if ch_type == 'mag':
+            power.pick_types(meg='mag')
+        elif ch_type == 'grad':
+            power.pick_types(meg='grad')
+        elif ch_type == 'eeg':
+            power.pick_types(eeg=True,meg = False)
+        
+        
+        # plot single subject
+#        power.plot_topo(baseline=None) # , vmin = -50,vmax = 50
+     
+        # initiate matrices on first need
+        if pp == 0 and c == 0:
+            POW = np.zeros((len(nips), len(conditions), len(power.ch_names), len(power.freqs),len(power.times)))         
+            ITC = np.zeros((len(nips), len(conditions), len(power.ch_names), len(power.freqs),len(power.times)))         
+           
+        POW[pp,c]=power.data
 
-            
-            itc =  mne.time_frequency.read_tfrs(op.join(meg_subject_dir, '%s_%s_itc_%s-tfr.h5'
-                                                        % (config.study_name, nip,
-                                                           condition.replace(op.sep, ''))))
-            
-            itc = itc.pop()
-            itc = itc.crop(tmin=tmin,tmax=tmax)
-            
-            if new_ch_type == 'mag':
-               itc.pick_types(meg='mag')
-            elif new_ch_type == 'grad':
-                itc.pick_types(meg='grad')
-            elif new_ch_type == 'eeg':
-                itc.pick_types(eeg=True,meg = False)
-            
-            ITC[pp,c,f]=itc.data
-    
-        if pp == 0:
-            pow_dummy = power
-            itc_dummy = itc
-            
-ch_type = new_ch_type  
-    
-#%% plot per COND and FP, at 1 selected channel
-    
-mne.viz.plot_sensors(pow_dummy.info,ch_type='mag')
-plotchan = pow_dummy.ch_names.index('MEG1641')      # MEG1632    EEG012      
-plot_tmin = -2.
-plot_tmax = 1.     
+        
+        itc =  mne.time_frequency.read_tfrs(op.join(meg_subject_dir, '%s_%s_itc_%s-tfr.h5'
+                                                    % (config.study_name, nip,
+                                                       condition.replace(op.sep, ''))))
+        itc = itc.pop()
+        itc = itc.crop(tmin=tmin,tmax=tmax)
+        
+        if ch_type == 'mag':
+           itc.pick_types(meg='mag')
+        elif ch_type == 'grad':
+            itc.pick_types(meg='grad')
+        elif ch_type == 'eeg':
+            itc.pick_types(eeg=True,meg = False)
+        
+        ITC[pp,c]=itc.data
 
+    if pp == 0:
+        pow_dummy = power
+        itc_dummy = itc
+            
+    
+
+#%% compute condition differences per FP and visualize    
+         
+plot_tmin = tmin
+plot_tmax = tmax         
+            
 for c, condition in enumerate(conditions):          
     # loop over FP
    
 #        c = 3
 #        condition = conditions[c]
-#        
-    for f,this_fp in enumerate(foreperiods):
-        
-        P = np.mean(POW[:,c,f], 0) # avg over sbs
-        AVGPOW = mne.time_frequency.AverageTFR(pow_dummy.info,P,pow_dummy.times,pow_dummy.freqs,nave=len(nips))
-          
-        AVGPOW.plot([plotchan], baseline=None, tmin = plot_tmin, tmax = plot_tmax,
-                    title=('POW ' + condition + str(this_fp) + 's_' + AVGPOW.ch_names[plotchan])) # , axes=axis[c]
-         
-##              
-#            I = np.mean(ITC[:,c,f], 0) # avg over sbs
-#            AVGITC = AverageTFR(itc_dummy.info,I,itc_dummy.times,itc_dummy.freqs,nave=len(nips))
-#              
-#            AVGITC.plot([plotchan], baseline=None, tmin = tmin, tmax = 3, vmin = 0,
-#                        title=('ITC ' + condition + str(this_fp) + 's_' + AVGITC.ch_names[plotchan])) # , axes=axis[c]
-            
-
-#%% compute condition differences per FP and visualize    
-         
-plot_tmin = -.5
-plot_tmax = 0.           
-            
-for f,this_fp in enumerate(foreperiods):        
-    
-#    # PITCH P - NP
-#    P = np.mean(POW[:,1,f], 0) - np.mean(POW[:,0,f], 0) 
-#    AVGPOW_Pitch_P_NP = AverageTFR(pow_dummy.info,P,pow_dummy.times,pow_dummy.freqs,nave=len(nips))
-#    # AVGPOW_Pitch_P_NP.plot([plotchan], baseline=None, title=('POW Pitch_P_NP'  + ' '+ AVGPOW.ch_names[plotchan])) # , axes=axis[c]
-#    AVGPOW_Pitch_P_NP.plot_topo(baseline=None, tmin = plot_tmin, tmax = plot_tmax,vmin = -1.5,vmax = 1.5,
-#                                title=('POW Pitch_P_NP'  + ' ' + str(this_fp) + 's_'))
-###
-#    # TIME P - NP
-#    P = np.mean(POW[:,3,f], 0) - np.mean(POW[:,2,f], 0) 
-#    AVGPOW_Time_P_NP = AverageTFR(pow_dummy.info,P,pow_dummy.times,pow_dummy.freqs,nave=len(nips))
-##     AVGPOW_Time_P_NP.plot([plotchan], baseline=None, title=('POW Time_P_NP'  + ' '+ AVGPOW.ch_names[plotchan])) # , axes=axis[c]
-#    AVGPOW_Time_P_NP.plot_topo(baseline=None, tmin = tmin, tmax = tmax,
-#                               title=('POW Time_P_NP'  + ' ' + str(this_fp) + 's_'))
-#    
-#    
-#    # TIME NP - Pitch P
-#    P = np.mean(POW[:,2,f], 0) - np.mean(POW[:,1,f], 0) 
-#    AVGPOW_Time_NP_Pitch_P = AverageTFR(pow_dummy.info,P,pow_dummy.times,pow_dummy.freqs,nave=len(nips))
-#    #AVGPOW_Time_NP_Pitch_P.plot([plotchan], baseline=None, title=('POW Time_NP_Pitch_P'  + ' '+ AVGPOW.ch_names[plotchan])) # , axes=axis[c]
-#    AVGPOW_Time_NP_Pitch_P.plot_topo(baseline=None, tmin = tmin, tmax = tmax,
-#                                     title=('Time_NP - Pitch_P'  + ' ' + str(this_fp) + 's_'))
 #         
-          
-    # PITCH P - NP
-    P = np.mean(ITC[:,1,f], 0) - np.mean(ITC[:,0,f], 0) 
-    AVGITC_Pitch_P_NP = mne.time_frequency.AverageTFR(itc_dummy.info,P,pow_dummy.times,pow_dummy.freqs,nave=len(nips))
-    #AVGITC_Pitch_P_NP.plot([plotchan], baseline=None, title=('ITC Pitch_P_NP'  + ' '+ AVGPOW.ch_names[plotchan])) # , axes=axis[c]
-    AVGITC_Pitch_P_NP.plot_topo(baseline=None, tmin = plot_tmin, tmax = plot_tmax,vmin = -.05,vmax = .05,
-                                title=('ITC Pitch_P_NP'  + ' ' + str(this_fp) + 's_'))
-        
-#          
-#    # TIME P - NP
-#    P = np.mean(ITC[:,3,f], 0) - np.mean(ITC[:,2,f], 0) 
-#    AVGITC_Time_P_NP = AverageTFR(itc_dummy.info,P,pow_dummy.times,pow_dummy.freqs,nave=len(nips))
-#    #AVGITC_Time_P_NP.plot([plotchan], baseline=None, title=('ITC Time_P_NP' + ' '+ AVGPOW.ch_names[plotchan])) # , axes=axis[c]
-#    AVGITC_Time_P_NP.plot_topo(baseline=None,tmin = tmin, tmax = tmax,
-#                               title=('ITC Time_P_NP'  + ' ' + str(this_fp) + 's_'))
-#       
-#          
-#    # TIME NP - Pitch P
-#    P = np.mean(ITC[:,2,f], 0) - np.mean(ITC[:,1,f], 0) 
-#    AVGITC_Time_NP_Pitch_P = AverageTFR(itc_dummy.info,P,itc_dummy.times,itc_dummy.freqs,nave=len(nips))
-#    # AVGITC_Time_NP_Pitch_P.plot([plotchan], baseline=None, title=('ITC Time_NP_Pitch_P'  + ' '+ AVGPOW.ch_names[plotchan])) # , axes=axis[c]
-#    AVGITC_Time_NP_Pitch_P.plot_topo(baseline=None, tmin = tmin, tmax = tmax,
-#                                     title=('Time_NP_Pitch_P'  + ' ' + str(this_fp) + 's_'))
-         
+    P = np.mean(POW[:,c], 0) # avg over sbs
+    AVGPOW = mne.time_frequency.AverageTFR(pow_dummy.info,P,pow_dummy.times,pow_dummy.freqs,nave=len(nips))
+      
+    AVGPOW.plot_topo(baseline=None, tmin = plot_tmin, tmax = plot_tmax,
+                title=('POW ' + condition ),
+                ) # vmin = -50,vmax = 50
+ 
 
-#%% compute condition differences for avg FP and visualize    
+# plot condition difference
+P = np.mean(POW[:,1] - (POW[:,0]), 0) # avg over sbs
+AVGPOW = mne.time_frequency.AverageTFR(pow_dummy.info,P,pow_dummy.times,pow_dummy.freqs,nave=len(nips))
+      
+AVGPOW.plot_topo(baseline=None, tmin = plot_tmin, tmax = plot_tmax,
+                title=('POW ' + 'difference' ),
+                vmin = -.30,vmax = .30) # , axes=axis[c]
 
-# POW_save = POW
-# ITC_save = ITC
-
-#POW = POW_save[:,:,np.arange(2,5,1)]  
-#ITC = ITC_save[:,:,np.arange(2,5,1)]      
-       
-plot_tmin = -.5
-plot_tmax = 0.  
-    
-## POW
-
-# [Something is wrong with POWER for FP = 3 >> all NaN/Inf]
-
-P = np.mean(POW[:,1,0:5], 0) - np.mean(POW[:,0,0:5], 0) 
-P = np.mean(P, 0) # avg over FP
-AVGPOW_allFP_Pitch_P_NP = AverageTFR(pow_dummy.info,P,pow_dummy.times,pow_dummy.freqs,nave=len(nips))
-AVGPOW_allFP_Pitch_P_NP.plot_topo(baseline=None, title=('POW Pitch_P_NP'  + ' ' + 'avgFP'),
-                                  vmin = -.5,vmax = .5,tmin = plot_tmin,tmax = plot_tmax)
-
-
-P = np.mean(POW[:,3], 0) - np.mean(POW[:,2], 0) 
-P = np.mean(P, 0) # avg over FP
-AVGPOW_allFP_Time_P_NP = AverageTFR(pow_dummy.info,P,pow_dummy.times,pow_dummy.freqs,nave=len(nips))
-#AVGPOW_allFP_Time_P_NP.plot_topo(baseline=None, title=('POW Time_P_NP'  + ' ' + 'avgFP'),
-#                                 vmin = -1.,vmax = 1.,tmin = plot_tmin,tmax = plot_tmax)
-
-#
-P =(np.mean(POW[:,3], 0) - np.mean(POW[:,2], 0)) - (np.mean(POW[:,1], 0) - np.mean(POW[:,0], 0))
-P = np.mean(P, 0) # avg over FP
-AVGPOW_allFP_Time_Pitch = AverageTFR(pow_dummy.info,P,pow_dummy.times,pow_dummy.freqs,nave=len(nips))
-#AVGPOW_allFP_Time_Pitch.plot_topo(baseline=None, title=('POW _Time - Pitch'  + ' ' + 'avgFP'),
-#                                        vmin = -1.,vmax = 1.,tmin = plot_tmin,tmax = plot_tmax)
-#
-#
-P =(np.mean(POW[:,2], 0) - np.mean(POW[:,0], 0)) 
-P = np.mean(P, 0) # avg over FP
-AVGPOW_allFP_Time_NP_Pitch_NP = AverageTFR(pow_dummy.info,P,pow_dummy.times,pow_dummy.freqs,nave=len(nips))
-#AVGPOW_allFP_Time_Pitch.plot_topo(baseline=None, title=('POW TimeNP - PitchNP'  + ' ' + 'avgFP'),
-#                                vmin = -1.,vmax = 1.,tmin = plot_tmin,tmax = plot_tmax)
-#          
-
-
-
-## ITC
-P = np.mean(ITC[:,1], 0) - np.mean(ITC[:,0], 0) 
-P = np.mean(P, 0) # avg over FP
-AVGITC_allFP_Pitch_P_NP = AverageTFR(pow_dummy.info,P,pow_dummy.times,pow_dummy.freqs,nave=len(nips))
-AVGITC_allFP_Pitch_P_NP.plot_topo(baseline=None, title=('ITC Pitch_P_NP'  + ' '  + 'avgFP'),
-                                  vmin = -.04,vmax = .04,tmin = plot_tmin,tmax = plot_tmax)
-
-
-P = np.mean(ITC[:,3], 0) - np.mean(ITC[:,2], 0) 
-P = np.mean(P, 0) # avg over FP
-AVGITC_allFP_Time_P_NP = AverageTFR(pow_dummy.info,P,pow_dummy.times,pow_dummy.freqs,nave=len(nips))
-#AVGITC_allFP_Time_P_NP.plot_topo(baseline=None, title=('ITC Time_P_NP'  + ' ' + 'avgFP'),
-#                                vmin = -.05,vmax = .05,tmin = plot_tmin,tmax = plot_tmax)
-#
-#
-P = (np.mean(ITC[:,3], 0) - np.mean(ITC[:,2], 0)) - (np.mean(ITC[:,1], 0) - np.mean(ITC[:,0], 0)) 
-P = np.mean(P, 0) # avg over FP
-AVGITC_allFP_Time_Pitch = AverageTFR(pow_dummy.info,P,pow_dummy.times,pow_dummy.freqs,nave=len(nips))
-#AVGITC_allFP_Time_Pitch.plot_topo(baseline=None, title=('ITC Time - Pitch'  + ' ' + 'avgFP'),
-#                                vmin = -.05,vmax = .05,tmin = plot_tmin,tmax = plot_tmax)
-#
-#
-P = np.mean(ITC[:,2], 0) - np.mean(ITC[:,0], 0)
-P = np.mean(P, 0) # avg over FP
-AVGITC_allFP_Time_NP_Pitch_NP = AverageTFR(pow_dummy.info,P,pow_dummy.times,pow_dummy.freqs,nave=len(nips))
-#AVGITC_allFP_Time_Pitch.plot_topo(baseline=None, title=('ITC TimeNP - PitchNP'  + ' ' + 'avgFP'),
-#                                vmin = -.05,vmax = .05,tmin = plot_tmin,tmax = plot_tmax)
 
 #%%    visualize condition differences at selected frequency bands
 
-# grad doenst seem to work with the same scale; only positive but data are diff
+plot_tmin = 1.
+plot_tmax = 1.5 
 
-plot_tmin = -.3
-plot_tmax = -.1  
-
-vmax_pow = .3
+vmax_pow = .1
 vmin_pow = -vmax_pow
 vmax_itc = .02
 vmin_itc = -vmax_itc
 
 fmin = 15
 fmax = 30
-   
-AVGPOW_allFP_Pitch_P_NP.plot_topomap(ch_type=ch_type, tmin=plot_tmin, tmax=plot_tmax, fmin=fmin, fmax=fmax,
+
+P = np.mean(POW[:,1] - (POW[:,0]), 0) # avg over sbs
+AVGPOW = mne.time_frequency.AverageTFR(pow_dummy.info,P,pow_dummy.times,pow_dummy.freqs,nave=len(nips))
+AVGPOW.plot_topomap(ch_type=ch_type, tmin=plot_tmin, tmax=plot_tmax, fmin=fmin, fmax=fmax,
                baseline=None,
-               title=('POW Pitch_P_NP:' + str(fmin) + '-'+ str(fmax) + ' Hz'),  
+               title=('POW difference:' + str(fmin) + '-'+ str(fmax) + ' Hz '
+                      + str(plot_tmin) + '-' + str(plot_tmax) + ' s'),  
                show=False, vmin = vmin_pow, vmax = vmax_pow)
 
 
-AVGPOW_allFP_Time_Pitch.plot_topomap(ch_type=ch_type, tmin=plot_tmin, tmax=plot_tmax, fmin=fmin, fmax=fmax,
-               baseline=None,
-               title=('POW Time_NP - Pitch_NP:' + str(fmin) + '-'+ str(fmax) + ' Hz'), 
-               show=False, vmin = vmin_pow, vmax = vmax_pow)
-
-AVGPOW_allFP_Time_P_NP.plot_topomap(ch_type=ch_type, tmin=plot_tmin, tmax=plot_tmax, fmin=fmin, fmax=fmax,
-               baseline=None,
-               title=('POW Time_P - Time_NP:' + str(fmin) + '-'+ str(fmax) + ' Hz'), 
-               show=False, vmin = vmin_pow, vmax = vmax_pow)
-
-
-AVGITC_allFP_Pitch_P_NP.plot_topomap(ch_type=ch_type, tmin=plot_tmin, tmax=plot_tmax, fmin=fmin, fmax=fmax,
-               baseline=None,  
-               title=('ITC Pitch_P_NP:' + str(fmin) + '-'+ str(fmax) + ' Hz'),  show=False, vmin = vmin_itc, vmax = vmax_itc)
-        
-   
-AVGITC_allFP_Time_P_NP.plot_topomap(ch_type=ch_type, tmin=plot_tmin, tmax=plot_tmax, fmin=fmin, fmax=fmax,
-               baseline=None,
-               title=('ITC Time_P_NP:' + str(fmin) + '-' +str(fmax) + ' Hz'),  show=False, vmin = vmin_itc, vmax = vmax_itc)
-
-AVGITC_allFP_Time_NP_Pitch_NP.plot_topomap(ch_type=ch_type, tmin=plot_tmin, tmax=plot_tmax, fmin=fmin, fmax=fmax,
-               baseline=None,
-               title=('ITC Time_NP - Pitch_NP:' + str(fmin) + '-' +str(fmax) + ' Hz'),  show=False, vmin = vmin_itc, vmax = vmax_itc)
-
-#%% Cond Diff avg FP, 1 channel
-plot_tmin = -0.5
-plot_tmax = 3.0
-
-mne.viz.plot_sensors(pow_dummy.info)
-plotchan = itc_dummy.ch_names.index('MEG0431')      # MEG1632    EEG012      
+#%% plot per COND and FP, at 1 selected channel
     
-AVGITC_allFP_Pitch_P_NP.plot([plotchan], baseline=None, title=('ITC Pitch_P_NP'  + ' '+ AVGPOW.ch_names[plotchan]),tmin=tmin, tmax=plot_tmax) # , axes=axis[c]
-   
+mne.viz.plot_sensors(pow_dummy.info,ch_type='mag')
+plotchan = pow_dummy.ch_names.index('MEG2241')      # MEG1632    EEG012      
+plot_tmin = tmin
+plot_tmax = tmax   
 
+for c, condition in enumerate(conditions):          
+    # loop over FP
+   
+#        c = 3
+#        condition = conditions[c]
+#         
+    P = np.mean(POW[:,c], 0) # avg over sbs
+    AVGPOW = mne.time_frequency.AverageTFR(pow_dummy.info,P,pow_dummy.times,pow_dummy.freqs,nave=len(nips))
+      
+    AVGPOW.plot([plotchan], baseline=None, tmin = plot_tmin, tmax = plot_tmax,
+                title=('POW ' + condition + AVGPOW.ch_names[plotchan])) # , axes=axis[c]
+    
+     
+P = np.mean(POW[:,1] - (POW[:,0]), 0) # avg over sbs
+AVGPOW = mne.time_frequency.AverageTFR(pow_dummy.info,P,pow_dummy.times,pow_dummy.freqs,nave=len(nips))
+       
+AVGPOW.plot([plotchan], baseline=None, tmin = plot_tmin, tmax = plot_tmax,
+                title=('POW ' + 'difference' + AVGPOW.ch_names[plotchan])) # , axes=axis[c]
 #%% CLUSTER T-TESTS between single conditions
             
 # POW or ITC ? 

@@ -34,7 +34,9 @@ plot = True
 # or
 # >>> study_path = '/Users/sophie/repos/ExampleData/'
 
-study_path = '/neurospin/meg/meg_tmp/TimeInWM_Izem_2019/'
+#study_path = '/neurospin/meg/meg_tmp/TimeInWM_Izem_2019/'
+
+study_path = 'F:/new tfr/'
 
 # ``subjects_dir`` : str
 #   The ``subjects_dir`` contains the MRI files for all subjects.
@@ -67,8 +69,7 @@ study_name = 'TimeInWM'
 #                 'ga_180461','fr_190151','tr_180110','ld_190260','cg_190026',
 #                 'ml_180318']
 
-subjects_list = ['hm_070076','cc_150418','sf_180213','eb_180237','og_170145',
-                 'ga_180461','fr_190151','tr_180110','ld_190260','cg_190026']
+subjects_list = ['hm_070076','cc_150418','sf_180213']
 
 #subjects_list = ['hm_070076']
 
@@ -620,7 +621,8 @@ event_id = {
         '3_intervals/7': 221, '3_intervals/8': 222, '3_intervals/9': 223, '3_intervals/10': 224, '3_intervals/11': 225, '3_intervals/12': 226,
         '3_intervals/13': 231, '3_intervals/14': 232, '3_intervals/15': 233, '3_intervals/16': 234, '3_intervals/17': 235, '3_intervals/18': 236
         }
-conditions = ['1_interval','3_intervals']
+conditions = ['1_interval','3_intervals',
+              'short_dur','med_dur','long_dur']
 
 
 # Good Practice / Advice
@@ -781,7 +783,8 @@ decoding_n_splits = 5
 # ``time_frequency_conditions`` : list
 #    The conditions to compute time-frequency decomposition on.
 
-time_frequency_conditions = ['1_interval','3_intervals']
+time_frequency_conditions = ['1_interval','3_intervals',
+                             'short_dur','med_dur','long_dur']
 
 ###############################################################################
 # SOURCE SPACE PARAMETERS
