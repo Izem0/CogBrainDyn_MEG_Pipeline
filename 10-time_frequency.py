@@ -17,8 +17,8 @@ from mne.parallel import parallel_func
 
 import config
 
-freqs = np.arange(10, 40)
-n_cycles = freqs / 3.
+freqs = np.arange(1, 40)
+n_cycles = freqs / 2.
 
 
 def run_time_frequency(subject):

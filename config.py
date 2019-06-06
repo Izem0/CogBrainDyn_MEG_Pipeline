@@ -10,15 +10,15 @@ Configuration parameters for the study. This should be in a folder called
 import os
 from collections import defaultdict
 import numpy as np
-
+ 
 
 # ``plot``  : boolean
 #   If True, the scripts will generate plots.
 #   If running the scripts from a notebook or spyder
 #   run %matplotlib qt in the command line to get the plots in extra windows
 
-#plot = False
-plot = True
+plot = False
+#plot = True
 
 
 ###############################################################################
@@ -34,9 +34,7 @@ plot = True
 # or
 # >>> study_path = '/Users/sophie/repos/ExampleData/'
 
-#study_path = '/neurospin/meg/meg_tmp/TimeInWM_Izem_2019/'
-
-study_path = 'F:/new tfr/'
+study_path = '/neurospin/meg/meg_tmp/TimeInWM_Izem_2019/'
 
 # ``subjects_dir`` : str
 #   The ``subjects_dir`` contains the MRI files for all subjects.
@@ -65,11 +63,10 @@ study_name = 'TimeInWM'
 #   subjects_list = ['SB01']
 
 # To use all subjects use
-#subjects_list = ['hm_070076','cc_150418','sf_180213','eb_180237','og_170145',
-#                 'ga_180461','fr_190151','tr_180110','ld_190260','cg_190026',
-#                 'ml_180318']
 
-subjects_list = ['hm_070076','cc_150418','sf_180213']
+subjects_list = ['hm_070076','cc_150418','sf_180213','eb_180237','og_170145',
+                 'ga_180461','fr_190151','tr_180110','ld_190260','cg_190026',
+                 'ml_180318','ml_180195','ag_170045','hf_190144','lq_180242']
 
 #subjects_list = ['hm_070076']
 
@@ -289,6 +286,51 @@ bads['ml_180318'] = dict(
                          )
 
 
+bads['ml_180195'] = dict(
+                         _run01=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG2431','MEG2522','MEG2523','MEG0311','MEG0943'],
+                         _run02=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG2431','MEG2522','MEG2523','MEG0311','MEG0943'],
+                         _run03=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG2431','MEG2522','MEG2523','MEG0311','MEG0943'],
+                         _run04=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG2431','MEG2522','MEG2523','MEG0311','MEG0943'],
+                         _run05=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG2431','MEG2522','MEG2523','MEG0311','MEG0943'],
+                         _run06=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG2431','MEG2522','MEG2523','MEG0311','MEG0943'],
+                         _run07=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG2431','MEG2522','MEG2523','MEG0311','MEG0943'],
+                         _run08=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG2431','MEG2522','MEG2523','MEG0311','MEG0943']
+                         )
+
+
+bads['ag_170045'] = dict(
+                         _run01=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG2132','MEG0311','MEG0543','MEG1233'],
+                         _run02=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG2132','MEG0311','MEG0543','MEG1233'],
+                         _run03=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG2132','MEG0311','MEG0543','MEG1233'],
+                         _run04=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG2132','MEG0311','MEG0543','MEG1233'],
+                         _run05=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG2132','MEG0311','MEG0543','MEG1233'],
+                         _run06=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG2132','MEG0311','MEG0543','MEG1233'],
+                         _run07=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG2132','MEG0311','MEG0543','MEG1233'],
+                         _run08=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG2132','MEG0311','MEG0543','MEG1233']
+                         )
+
+bads['hf_190144'] = dict(
+                         _run01=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG0311','MEG0543'],
+                         _run02=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG0311','MEG0543'],
+                         _run03=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG0311','MEG0543'],
+                         _run04=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG0311','MEG0543'],
+                         _run05=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG0311','MEG0543'],
+                         _run06=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG0311','MEG0543'],
+                         _run07=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG0311','MEG0543'],
+                         _run08=['MEG0213','MEG0633','MEG1723','MEG1732','MEG1933','MEG0311','MEG0543']
+                         )
+
+bads['lq_180242'] = dict(
+                         _run01=['MEG0213','MEG1512','MEG1441','MEG0633','MEG1723','MEG1732','MEG1933','MEG0311','MEG0543'],
+                         _run02=['MEG0213','MEG1512','MEG1441','MEG0633','MEG1723','MEG1732','MEG1933','MEG2041','MEG2131','MEG0311','MEG0543'],
+                         _run03=['MEG0213','MEG1512','MEG1441','MEG0633','MEG1723','MEG1732','MEG1933','MEG2041','MEG0311','MEG0543'],
+                         _run04=['MEG0213','MEG1512','MEG1441','MEG0633','MEG1723','MEG1732','MEG1933','MEG2041','MEG0311','MEG0543'],
+                         _run05=['MEG0213','MEG1512','MEG0633','MEG1723','MEG1732','MEG1933','MEG2041','MEG0311','MEG0543','MEG1031'],
+                         _run06=['MEG0213','MEG1512','MEG0633','MEG1723','MEG1732','MEG1933','MEG0311','MEG0543','MEG1031'],
+                         _run07=['MEG0213','MEG1512','MEG0633','MEG1723','MEG1732','MEG1933','MEG0311','MEG0543'],
+                         _run08=['MEG0213','MEG1512','MEG0633','MEG1723','MEG1732','MEG1933','MEG0311','MEG0543']
+                         )
+
 #bads[''] = dict(
 #                         _run01=[],
 #                         _run02=[],
@@ -312,38 +354,6 @@ bads['ml_180318'] = dict(
 #                         _run08=[]
 #                         )
 
-#bads[''] = dict(
-#                         _run01=[],
-#                         _run02=[],
-#                         _run03=[],
-#                         _run04=[],
-#                         _run05=[],
-#                         _run06=[],
-#                         _run07=[],
-#                         _run08=[]
-#                         )
-
-#bads[''] = dict(
-#                         _run01=[],
-#                         _run02=[],
-#                         _run03=[],
-#                         _run04=[],
-#                         _run05=[],
-#                         _run06=[],
-#                         _run07=[],
-#                         _run08=[]
-#                         )
-
-#bads[''] = dict(
-#                         _run01=[],
-#                         _run02=[],
-#                         _run03=[],
-#                         _run04=[],
-#                         _run05=[],
-#                         _run06=[],
-#                         _run07=[],
-#                         _run08=[]
-#                         )
 
 
 
@@ -563,12 +573,12 @@ reject = {'grad': 4000e-13, 'mag': 4e-12}
 # ``tmin``: float
 #    A float in seconds that gives the start time before event of an epoch.
 
-tmin = -.2
+tmin = -.5
 
 # ``tmax``: float
 #    A float in seconds that gives the end time before event of an epoch.
 
-tmax = 4.4
+tmax = 4.5
 
 # ``trigger_time_shift`` : float | None
 #    If float it specifies the offset for the trigger and the stimulus
@@ -619,7 +629,10 @@ event_id = {
         '1_interval/1': 110, '1_interval/2': 120, '1_interval/3': 130,
         '3_intervals/1': 211, '3_intervals/2': 212, '3_intervals/3': 213, '3_intervals/4': 214, '3_intervals/5': 215, '3_intervals/6': 216,
         '3_intervals/7': 221, '3_intervals/8': 222, '3_intervals/9': 223, '3_intervals/10': 224, '3_intervals/11': 225, '3_intervals/12': 226,
-        '3_intervals/13': 231, '3_intervals/14': 232, '3_intervals/15': 233, '3_intervals/16': 234, '3_intervals/17': 235, '3_intervals/18': 236
+        '3_intervals/13': 231, '3_intervals/14': 232, '3_intervals/15': 233, '3_intervals/16': 234, '3_intervals/17': 235, '3_intervals/18': 236,
+        'short_dur/1':110 ,'short_dur/2':211,'short_dur/3':212,'short_dur/4':213,'short_dur/5':214,'short_dur/7':215,'short_dur/6':216,
+        'med_dur/1':120 ,'med_dur/2':221,'med_dur/3':222,'med_dur/4':223,'med_dur/5':224,'med_dur/6':225,'med_dur/7':226,
+        'long_dur/1':130 ,'long_dur/2':231,'long_dur/3':232,'long_dur/4':233,'long_dur/5':234,'long_dur/6':235,'long_dur/7':236
         }
 conditions = ['1_interval','3_intervals',
               'short_dur','med_dur','long_dur']
@@ -700,17 +713,22 @@ ica_decim = 11
 #        cg_190026=dict(meg=[30,54,62]) #62
  
 rejcomps_man = dict(
-        hm_070076=dict(meg=[30,37,45,59,65,]), #59
-        cc_150418=dict(meg=[2,48]),
-        sf_180213=dict(meg=[0,1,2,3,33,50]), #50
-        eb_180237=dict(meg=[0,8,18]),
-        og_170145=dict(meg=[0,5,17,23,28,32,40,57]), #57 28
-        ga_180461=dict(meg=[2,3,5,7,26,56,57]), #71 ? 
-        fr_190151=dict(meg=[9,20,38,66,68]),
-        tr_180110=dict(meg=[0,25,44,46,55,61,70]), #55 61 
-        ld_190260=dict(meg=[0,16,49,64]), #59
-        cg_190026=dict(meg=[22,33,41,48,69]) #64
-                     )
+        hm_070076=dict(meg=[29,34,40,57]), #
+        cc_150418=dict(meg=[2,53]),
+        sf_180213=dict(meg=[0,1,2,4,28,48,50,67]), #
+        eb_180237=dict(meg=[0,9,20,23,69]),
+        og_170145=dict(meg=[0,7,9,18,27,28,33,56,60,62,66,70,71]), #40 41
+        ga_180461=dict(meg=[2,4,5,6,7,30,53,64,68,71]), #
+        fr_190151=dict(meg=[8,19,38,63,69,71]),
+        tr_180110=dict(meg=[0,17,43,47,48,58,59,63,70]), #
+        ld_190260=dict(meg=[0,15,47,48,59]), #
+        cg_190026=dict(meg=[34,36,43,56,62,69]), #
+        ml_180318=dict(meg=[0,9,12,24,52,55,59,70]), #
+        ml_180195=dict(meg=[0,1,2,7,20,25,29,51,57,59,63,68]), #
+        ag_170045=dict(meg=[2,6,12,14,16,28,35,41,60,66,67,69,71]), #
+        hf_190144=dict(meg=[0,7,59,65,67,69]),
+        lq_180242=dict(meg=[1,6,22,28,37,43,49,55,57,65,70])
+        )
 
 
 #def default_reject_comps():
@@ -782,7 +800,7 @@ decoding_n_splits = 5
 #
 # ``time_frequency_conditions`` : list
 #    The conditions to compute time-frequency decomposition on.
-
+#1_interval','3_intervals',
 time_frequency_conditions = ['1_interval','3_intervals',
                              'short_dur','med_dur','long_dur']
 
@@ -890,3 +908,4 @@ shortest_event = 1
 #    maxfilter set this to True.
 
 allow_maxshield = True
+
