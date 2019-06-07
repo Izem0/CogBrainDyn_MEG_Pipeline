@@ -3,7 +3,7 @@
 """
 Created on Tue Apr 24 09:31:08 2018
 
-@author: sh252228
+@author: sh252228, ie258305
 """
 
 import numpy as np
@@ -124,7 +124,7 @@ for pp, nip in enumerate(nips):
 
 #%% normalize data for cluster t-test
         
-POW_keep = POW.copy()
+POW_keep = POW.copy() 
 #POW = POW_keep
 
 for pp, nip in enumerate(nips):
@@ -134,6 +134,12 @@ for pp, nip in enumerate(nips):
     baseline = np.mean(baseline, -1)
     POW[pp] = temp / baseline[np.newaxis,:,:,np.newaxis]
        
+
+# test np.newaxis
+
+#a = np.array([2,4,6,8,10,12])
+#b = np.array([2,1,2,np.newaxis,2,np.newaxis])
+#a/b
 
 #%% compute condition differences and visualize    
          
@@ -316,12 +322,7 @@ for c, condition in enumerate(conditions):
     Ptmp = Ptmp.transpose(0,2,1) 
     allconds_power.append(Ptmp)
     
-#    Itmp = ITC[:,c]
-#    Itmp = Itmp[:,:,:,f1:f2,tp1:tp2]
-#    I = np.mean(Itmp, 1) # avg over FP
-#    I = np.mean(I, 2) # avg over FREQS
-#    I = I.reshape(n_replications, n_times, n_chans)   
-#    allconds_itc.append(I)
+
 
 times = itc_dummy.times[np.arange(tp1,tp2,1)]
 
@@ -350,79 +351,11 @@ T_obs, clusters, cluster_p_values, h0 = mne.stats.spatio_temporal_cluster_test(
 #        Ttestdata, connectivity=connectivity,stat_fun=stat_fun_hat, threshold=threshold, tail=tail, 
 #        n_permutations=n_permutations, buffer_size=None)
 
-good_clusters = np.where(cluster_p_values < .05)[0]
+good_cluster_inds = np.where(cluster_p_values < .05)[0]
 print('min (p): ' + str(np.min(cluster_p_values)))
 
-#%%
-TestDat = Ttestdata[0] - Ttestdata[1]
-TestDat_avg =  np.mean(TestDat,0)
-# visualise tfce result
-if do_tfce == 0:
-    for i_cluster, good_cluster in enumerate(good_clusters):
-          
-                masky = np.invert(clusters[np.squeeze(good_cluster)])
-    #                plt.imshow(np.swapaxes(clusters[np.squeeze(good_cluster)]*1,1,0),vmin=0, vmax=1)
-    #                plt.colorbar()
-    #                # Initialize figure
-    
-                T_masked = np.ma.masked_array(T_obs, masky) # masks the TRUE values (but has been inverted before)
-                
-                fig, ax = plt.subplots(1)    
-                ax1 = plt.subplot2grid((1, 2), (0, 0))
-                
-                # plot topo 
-                topodat = np.mean(T_masked,0)               
-                topodat = topodat.reshape(102,1,1)
-                TOPO = AverageTFR(pow_dummy.info,topodat,[0],[1],nave=len(nips))
-                TOPO.plot_topomap(ch_type=ch_type, tmin=0, tmax=0, fmin=1, fmax=1,
-                       baseline=None,
-                       title=(diffname +  "\n" +
-                          " cluster-level corrected (p <= " + str(p_threshold)),  
-                          axes = ax1, show=True)
-                
-                
-                # collapse mask over timepoints 
-                # to get all channels that are significant at any time
-                mask_chan = clusters[np.squeeze(good_cluster)].any(axis = 1)
-                mask_chan_mat = np.tile(mask_chan, (1,n_chans))
-                
-                time_inds = np.ma.masked_array(times,np.invert(clusters[np.squeeze(good_cluster)].any(axis = 1)))
-                
-                TestDat_diff = Ttestdata[0] - Ttestdata[1]
-                
-                TestDat0_masked = np.ma.masked_array(np.mean(Ttestdata[0],0), np.invert(mask_chan_mat))
-                TestDat1_masked = np.ma.masked_array(np.mean(Ttestdata[1],0), np.invert(mask_chan_mat))
-                
-                TestDat_diff_masked = np.ma.masked_array(np.mean(TestDat_diff,0), mask_chan_mat)
-                
-                plotdat0 = TestDat0_masked.mean(axis = 1)
-                plotdat1 = TestDat1_masked.mean(axis = 1)
-                
-                ax1 = plt.subplot2grid((1, 2), (0, 1))
-                plt.plot(times, plotdat0)
-                plt.plot(times, plotdat1)            
-                plt.title(diffname)
-             
-                plt.fill_betweenx((0.15, .2), time_inds.min(), time_inds.max(),
-                                 color='grey', alpha=0.3)
-                     
-else:
-    
-    # visualise tfce result
-    significant_points = cluster_p_values.reshape(T_obs.shape).T < .15
-    print('found ' + str(significant_points.sum()) + " points selected by TFCE ...")
-       
-    
-    AVGITC_allFP_Pitch_P_NP.plot_image(mask=significant_points, time_unit='s',
-                                    )
-#%% 
-    
+#%% create an evoked dummy 
 
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-from mne.viz import plot_topomap
-
-
-# Read the epochs
 for subject in config.subjects_list:
     meg_subject_dir = op.join(config.meg_dir, subject)
     extension = '-epo'
@@ -431,37 +364,28 @@ for subject in config.subjects_list:
     epochs = mne.read_epochs(fname_in, preload=True)
     epochs.pick_types(meg='grad')
 
+
+dummy_evoked = epochs.average()
+del epochs
+
+# plot cluster
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+from mne.viz import plot_topomap
+
+
 # configure variables for visualization
-colors = {"3_intervals": "crimson", "1_interval": 'steelblue'}
-event_id = {'1_interval/1': 110,
-            '1_interval/2': 120,
-            '1_interval/3': 130,
-            '3_intervals/1': 211,
-            '3_intervals/2': 212,
-            '3_intervals/3': 213,
-            '3_intervals/4': 214,
-            '3_intervals/5': 215,
-            '3_intervals/6': 216,
-            '3_intervals/7': 221,
-            '3_intervals/8': 222,
-            '3_intervals/9': 223,
-            '3_intervals/10': 224,
-            '3_intervals/11': 225,
-            '3_intervals/12': 226,
-            '3_intervals/13': 231,
-            '3_intervals/14': 232,
-            '3_intervals/15': 233,
-            '3_intervals/16': 234,
-            '3_intervals/17': 235,
-            '3_intervals/18': 236}
+plotcolors = [[243,184,157],[184,56,68],[0,123,194],[178,212,241]]
+plotcolors = np.true_divide(plotcolors,255)
+
 # get sensor positions via layout
-pos = mne.find_layout(power.info).pos
+pos = mne.find_layout(pow_dummy.info).pos
 
 # organize data for plotting
-evokeds = {cond: power.data[cond].average() for cond in event_id}
+evokeds = {conditions[cond]: mne.EvokedArray(np.mean(Ttestdata[cc],0).transpose(1,0), 
+                                 dummy_evoked.info, dummy_evoked.times[0]) for cc, cond in enumerate(test_conds)}
 
 # loop over clusters
-for i_clu, clu_idx in enumerate(good_clusters):
+for i_clu, clu_idx in enumerate(good_cluster_inds):
     # unpack cluster information, get unique indices
     time_inds, space_inds = np.squeeze(clusters[clu_idx])
     ch_inds = np.unique(space_inds)
@@ -471,7 +395,8 @@ for i_clu, clu_idx in enumerate(good_clusters):
     f_map = T_obs[time_inds, ...].mean(axis=0)
 
     # get signals at the sensors contributing to the cluster
-    sig_times = epochs.times[time_inds]
+    # pow_dummy.crop(tmin,tmax)
+    sig_times = dummy_evoked.times[time_inds]
 
     # create spatial mask
     mask = np.zeros((f_map.shape[0], 1), dtype=bool)
@@ -499,17 +424,16 @@ for i_clu, clu_idx in enumerate(good_clusters):
     if len(ch_inds) > 1:
         title += "s (mean)"
     mne.viz.plot_compare_evokeds(evokeds, title=title, picks=ch_inds, axes=ax_signals,
-                         colors=colors, show=False,
-                         split_legend=True, truncate_yaxis='max_ticks')
+                         colors=plotcolors,  show=False,
+                         split_legend=True, truncate_yaxis='max_ticks',
+                         vlines = []) # , ylim=dict(new_ch_type=[-.5, 1])
 
     # plot temporal cluster extent
     ymin, ymax = ax_signals.get_ylim()
     ax_signals.fill_betweenx((ymin, ymax), sig_times[0], sig_times[-1],
-                             color='orange', alpha=0.3)
+                             color='gray', alpha=0.3)
 
     # clean up viz
     mne.viz.tight_layout(fig=fig)
     fig.subplots_adjust(bottom=.05)
     plt.show()
-
-

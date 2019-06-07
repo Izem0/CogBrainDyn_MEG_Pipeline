@@ -11,8 +11,8 @@ import mne
 
 import config
 
-subject = 'fr_190151'
-runs = ['_run08']
+subject = 'at_140305'
+runs = ['_run01']
 meg_subject_dir = op.join(config.meg_dir, subject)
 
 
